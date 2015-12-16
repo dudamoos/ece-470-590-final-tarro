@@ -11,9 +11,7 @@ LL1 = 0.33
 LL2 = 0.33
 LL3 = 0.12
 
-# root is at center of waist
-K_WST = ([0,  0  ,  0  ], [0, 0, 1])
-
+# root is at center of waist, though waist joint is unused
 K_LSP = ([0,  LS ,  LB ], [0, 1, 0])
 K_RSP = ([0, -LS ,  LB ], [0, 1, 0])
 K_SR  = ([0,  0  ,  0  ], [1, 0, 0])
@@ -33,8 +31,8 @@ K_AP  = ([0,  0  , -LL2], [0, 1, 0])
 K_AR  = ([0,  0  ,  0  ], [1, 0, 0])
 K_EF  = ([0,  0  , -LL3], [0, 0, 0])
 
-KLH = [K_WST, K_LSP, K_SR, K_SY, K_EB, K_WY, K_WP, K_WR, K_EH]
-KRH = [K_WST, K_RSP, K_SR, K_SY, K_EB, K_WY, K_WP, K_WR, K_EH]
-KLF = [       K_LHY, K_HR, K_HP, K_KN,       K_AP, K_AR, K_EF]
-KRF = [       K_RHY, K_HR, K_HP, K_KN,       K_AP, K_AR, K_EF]
+KLH = [K_LSP, K_SR, K_SY, K_EB, K_WY, K_WP, K_WR, K_EH]
+KRH = [K_RSP, K_SR, K_SY, K_EB, K_WY, K_WP, K_WR, K_EH]
+KLF = [K_LHY, K_HR, K_HP, K_KN,       K_AP, K_AR, K_EF]
+KRF = [K_RHY, K_HR, K_HP, K_KN,       K_AP, K_AR, K_EF]
 

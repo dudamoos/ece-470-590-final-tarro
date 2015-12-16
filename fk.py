@@ -1,5 +1,5 @@
 import numpy as np
-from numpy import sin, cos, atan2
+from numpy import sin, cos
 
 # FK functions
 
@@ -34,7 +34,9 @@ def getT(theta, pick_lr):
 	"""
 	assert len(theta) == (len(pick_lr) - 1), "joints don't match kinematic model"
 	all_T = []
-	theta = theta.tolist().append(0) # append dummy zero for end effector
+	if (type(theta) == list): theta = theta[:] # copy the list
+	if (type(theta) == np.ndarray): theta = theta.tolist()
+
 
 	for entry in zip(theta, pick_lr): # (theta[i], Kin[i] { P, THETA_rot })
 		T = np.zeros((4, 4))
@@ -63,10 +65,10 @@ def get_pos(T, coords_to_get="x y z"):
 		if coord == "x": ret_coords.append(P[0])
 		elif coord == "y": ret_coords.append(P[1])
 		elif coord == "z": ret_coords.append(P[2])
-		elif coord == "thx": ret_coords.append(atan2(R[2, 1], R[2, 2]))
+		elif coord == "thx": ret_coords.append(np.arctan2(R[2, 1], R[2, 2]))
 		elif coord == "thy":
 			ret_coords.append(atan2(R[2, 0], R[2,1]**2 + R[2, 2]**2))
-		elif coord == "thz": ret_coords.append(atan2(R[1, 0], R[0, 0]))
+		elif coord == "thz": ret_coords.append(np.arctan2(R[1, 0], R[0, 0]))
 	return np.array(ret_coords)
 
 def get_fk(theta, pick_lr):
