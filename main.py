@@ -44,38 +44,54 @@ def arm_lift():
 	ref.ref[ha.RSR] = -np.pi / 3
 	ref.ref[ha.LSR] = np.pi / 3
 	chan_ref.put(ref)
-arm_lift()
 
 def get_fk_h(theta):
 	return fk.get_fk(theta, fk_chain.KRH)
 
+#REF_INTERVAL = 0.1
+REF_INTERVAL = 0.01
 def ik_control(theta):
 	global cur_time
 	
 	ref.ref[ha.RSP] = theta[0]
 	ref.ref[ha.RSR] = theta[1]
-	ref.ref[ha.RSY] = theta[2]
-	ref.ref[ha.REB] = theta[3]
-	ref.ref[ha.RWY] = theta[4]
-	ref.ref[ha.RWP] = theta[5]
-	ref.ref[ha.RWR] = theta[6]
+	#ref.ref[ha.RSY] = theta[2]
+	#if (theta[2] > 0): theta[2] = 0
+	if (theta[2] > 0): theta[2] = -theta[2]
+	ref.ref[ha.REB] = theta[2]
+	#ref.ref[ha.RWY] = theta[3]
+	ref.ref[ha.RWP] = theta[3]
+	#ref.ref[ha.RWR] = theta[4]
 	chan_ref.put(ref)
 	
 	[status, framesize] = chan_state.get(state, wait=False, last=True)
-	sim_sleep(cur_time + 0.1) # updates state while sleeping
+	sim_sleep(cur_time + REF_INTERVAL) # updates state while sleeping
 	cur_time = state.time
 
-theta = [0, -np.pi / 3, 0, 0, 0, 0, 0]
-max_err = 0.01 # 1% of max radius the 2d arm can reach
+theta = [0, -np.pi / 3, 0, 0]
+#max_err = 0.01 # 1% of max radius the 2d arm can reach
+max_err = 0.035 # 5% of max radius each 3d arm can reach
+max_err = 0.15
 theta_step = 0.01
-e_step = 0.003 # 1/2 of max_err
-goal = np.array([0.7, -0.1, -0.35]) # approximately pointing at the box
+#e_step = 0.003 # 1/2 of max_err
+e_step = 0.01
+
+goal = np.array([0.6, 0.0, 0.0]) # approximately pointing at the box
+#goal_arm = goal - fk_chain.K_RSP[0] # ensure in reachable range
+#goal_arm = 0.65 * goal_arm / np.linalg.norm(goal_arm)
+#goal = goal_arm + fk_chain.K_RSP[0] # reachable goal
+print "Goal position:", goal # approximately [ 0.60350985  0.00140394  0.        ]
+#goal = np.array([-0.65, -0.1, -0.3]) # backwards is forwards?
+# this point is approximately the result of theta = [-1.4, 0.2, 0, 0, 0, 0, 0]
+
+arm_lift()
 
 [status, framesize] = chan_state.get(state, wait=False, last=True)
 cur_time = state.time
 theta_end = ik.ik_solve(theta, goal, max_err, theta_step, e_step, get_fk_h, ik_control)
 print "Final theta:", theta_end
 print "Final pose:", get_fk_h(theta_end)
+#ik_control(theta_end)
 
 #def execute_path(path, fk, max_err):
 #	index = 0

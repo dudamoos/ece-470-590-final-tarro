@@ -36,7 +36,7 @@ def getT(theta, pick_lr):
 	all_T = []
 	if (type(theta) == list): theta = theta[:] # copy the list
 	if (type(theta) == np.ndarray): theta = theta.tolist()
-
+	theta.append(0) # append dummy zero for end effector
 
 	for entry in zip(theta, pick_lr): # (theta[i], Kin[i] { P, THETA_rot })
 		T = np.zeros((4, 4))
